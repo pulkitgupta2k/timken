@@ -40,7 +40,7 @@ def driver_product_links():
             product_links.extend(get_products(category))
         except Exception as e:
             print(e)
-    with open("products.json") as f:
+    with open("products.json", "w") as f:
         json.dump(product_links, f)
 
 if __name__ == "__main__":
