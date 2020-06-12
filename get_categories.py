@@ -1,9 +1,5 @@
 from bs4 import BeautifulSoup
 import json
-from pprint import pprint
-from datetime import datetime
-import csv
-import time
 import requests
 
 def getSoup(link):
