@@ -31,7 +31,7 @@ def getSoup_list(urls):
 def get_prod_inf(soup):
     return_list = []
     web_link = soup.find("link")['href']
-    item_no = web_link.split('/')[-1]
+    item_no = web_link.split('/')[-1].upper()
     categories = []
     for category in soup.find("nav", {"id": "plp-bread-crumb"}).findAll("a")[5:-1]:
         categories.append(category.text)
@@ -39,36 +39,38 @@ def get_prod_inf(soup):
     for table in soup.findAll("div", {"class": "plp-item-specs"})[1].findAll('div', {'class': 'group'}):
         table_header = table.find("a")['name']
         for tr in table.findAll("tr"):
-            data = []
             criteria = tr.findAll('td')[0].text.strip()
-            values = tr.findAll('td')[-1].find('span', {'itemprop': "value"}).text.strip()
-            value = values
-            units = ""
-            if len(value.split()) == 2:
-                if not values.split()[0].isalnum():
-                    value = values.split()[0]
-                    units = values.split()[1]
-                else:
-                    try:
-                        value = float(values.split()[0])
+            mul_values = tr.findAll('td')[-1].findAll('span', {'itemprop': "value"})
+            for values in mul_values:
+                values = values.text.strip()
+                value = values
+                units = ""
+                data = []
+                if len(value.split()) == 2:
+                    if not values.split()[0].isalnum():
+                        value = values.split()[0]
                         units = values.split()[1]
-                    except:
-                        pass
-            data.append(item_no)
-            data.append(criteria)
-            data.append(value)
-            data.append(units)
-            data.append(table_header)
-            data.append("")
-            data.append(item_no+"-Timken-1.jpg")
-            data.append(item_no+"-Timken-2.jpg")
-            data.append(item_no+"-Timken-3.jpg")
-            data.append(item_no+"-Timken.pdf")
-            data.append(item_no+"-Timken.dxf")
-            data.append(web_link)
-            data.extend(categories)
+                    else:
+                        try:
+                            value = float(values.split()[0])
+                            units = values.split()[1]
+                        except:
+                            pass
+                data.append(item_no)
+                data.append(criteria)
+                data.append(value)
+                data.append(units)
+                data.append(table_header)
+                data.append("")
+                data.append(item_no+"-Timken-1.jpg")
+                data.append(item_no+"-Timken-2.jpg")
+                data.append(item_no+"-Timken-3.jpg")
+                data.append(item_no+"-Timken.pdf")
+                data.append(item_no+"-Timken.dxf")
+                data.append(web_link)
+                data.extend(categories)
 
-            return_list.append(data)
+                return_list.append(data)
     return return_list
 
 def get_all_information():
@@ -80,7 +82,7 @@ def get_all_information():
     for product_link in product_links:
         ctr = ctr+1
         links.append(product_link)
-        if not ctr % 100:
+        if not ctr % 400:
             soups = getSoup_list(links)
             for soup in soups:
                 tabulate('details.csv',get_prod_inf(soup))
