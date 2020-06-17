@@ -6,6 +6,10 @@ import csv
 import time
 import grequests
 
+def validate(s):
+    values = s.split('/')
+    return len(values) == 2 and all(i.isdigit() for i in values)
+
 def tabulate(csvfile, matrix):
     with open(csvfile, "a", newline='', encoding="utf-8") as f:
         writer = csv.writer(f)
@@ -38,16 +42,20 @@ def get_prod_inf(soup):
 
     for table in soup.findAll("div", {"class": "plp-item-specs"})[1].findAll('div', {'class': 'group'}):
         table_header = table.find("a")['name']
+        if table_header.lower() not in ["specifications", "dimensions", "basic load ratings", "bearings ratings"]:
+            continue
         for tr in table.findAll("tr"):
             criteria = tr.findAll('td')[0].text.strip()
             mul_values = tr.findAll('td')[-1].findAll('span', {'itemprop': "value"})
             for values in mul_values:
                 values = values.text.strip()
                 value = values
+                if values.count("=") >= 2:
+                    continue
                 units = ""
                 data = []
                 if len(value.split()) == 2:
-                    if not values.split()[0].isalnum():
+                    if validate(values.split()[0]):
                         value = values.split()[0]
                         units = values.split()[1]
                     else:
@@ -90,6 +98,6 @@ def get_all_information():
     print(product_links)
 
 if __name__ == "__main__":
-    # soup = getSoup_list(["https://cad.timken.com/item/quiklean--corrosion-resistant-housed-units1/ic-two-bolt-flanged-housed-units-set-screw-locking/sucbflqk204-12"])[0]
-    # get_prod_inf(soup)
-    get_all_information()
+    soup = getSoup_list(["https://cad.timken.com/item/split-cylindrical-roller-bearing-medium-series-plu/split-cylindrical-roller-bearing-medium-series-saf/msm460brhsqe0849"])[0]
+    pprint(get_prod_inf(soup))
+    # get_all_information()
