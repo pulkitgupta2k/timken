@@ -42,7 +42,9 @@ def get_prod_inf(soup):
 
     for table in soup.findAll("div", {"class": "plp-item-specs"})[1].findAll('div', {'class': 'group'}):
         table_header = table.find("a")['name']
-        if table_header.lower() not in ["specifications", "dimensions", "basic load ratings", "bearings ratings"]:
+        if table_header.lower() not in ["specifications", "dimensions", "basic load ratings", "bearings ratings", 
+                                        "abutment and fillet dimensions", "factors", "dimensional data", "performance data", 
+                                        "performance data of related coupling", "basic chain dimensions"]:
             continue
         for tr in table.findAll("tr"):
             criteria = tr.findAll('td')[0].text.strip()
